@@ -1,0 +1,348 @@
+/* ═══════════════════════════════════════════════════════════
+   Y.U.K.I — Sistema Inteligente para la Gestión y Accesibilidad
+   Escolar — Hoja de estilos principal
+   NOTA: Paleta, tipografía y animaciones originales conservadas
+   tal cual del proyecto fuente. Solo se agregaron bloques nuevos
+   para las secciones institucionales (marcados al final).
+   ═══════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04070f;
+  --bg2:#080d1a;
+  --bg3:#0d1425;
+  --surface:#111827;
+  --surface2:#1a2338;
+  --border:#1e2d45;
+  --border2:#253654;
+  --text:#e8edf5;
+  --muted:#6b7fa0;
+  --cyan:#22d3ee;
+  --cyan2:#0891b2;
+  --blue:#3b82f6;
+  --green:#10b981;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --mono:'Space Mono',monospace;
+  --sans:'Syne',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex}
+
+/* ── LANDING ── */
+#s-landing{flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:40px 20px;text-align:center}
+.land-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:48px 48px;opacity:.25}
+.land-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(34,211,238,.12) 0%,transparent 70%);pointer-events:none}
+.land-content{position:relative;z-index:1;max-width:700px}
+.yuki-logo-big{font-family:var(--mono);font-size:clamp(48px,10vw,96px);font-weight:700;letter-spacing:.25em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:8px}
+.yuki-sub{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:32px}
+.land-desc{font-size:18px;color:#94a3b8;margin-bottom:40px;line-height:1.6;font-weight:400}
+.land-modules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
+.land-mod{background:rgba(255,255,255,.03);border:0.5px solid var(--border);border-radius:12px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,background .2s}
+.land-mod:hover{border-color:var(--cyan2);background:rgba(34,211,238,.05)}
+.land-mod i{font-size:22px;color:var(--cyan)}
+.land-mod span{font-size:12px;color:var(--muted);text-align:center}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:14px 36px;background:linear-gradient(135deg,var(--cyan2),var(--blue));border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:var(--sans);color:#fff;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.04em}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+
+/* ── LOGIN ── */
+#s-login{align-items:center;justify-content:center;padding:40px 20px;background:var(--bg)}
+.login-card{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:420px}
+.login-title{font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;font-family:var(--mono)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.field input{background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;padding:11px 14px;font-size:14px;font-family:var(--sans);color:var(--text);outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--cyan2)}
+.login-footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:20px;color:var(--muted)}
+.login-footer a{color:var(--cyan);cursor:pointer;text-decoration:none}
+.login-footer a:hover{text-decoration:underline}
+.err-msg{font-size:12px;color:var(--red);font-family:var(--mono);text-align:center;margin-bottom:12px;display:none}
+.link-text{font-size:13px;text-align:center;color:var(--muted);margin-top:16px}
+.link-text span{color:var(--cyan);cursor:pointer}
+.link-text span:hover{text-decoration:underline}
+
+/* ── APP SHELL ── */
+#s-app{flex-direction:row}
+.sidebar{width:240px;flex-shrink:0;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;padding:0}
+.sidebar-logo{padding:20px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-logo .mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--cyan2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:13px}
+.sidebar-logo .wordmark{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.15em;color:var(--text)}
+.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:background .15s,color .15s;font-family:var(--sans)}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:rgba(34,211,238,.1);color:var(--cyan);border:0.5px solid rgba(34,211,238,.2)}
+.nav-item i{width:16px;text-align:center;font-size:14px}
+.nav-section-label{font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding:14px 12px 6px;opacity:.6}
+.sidebar-bottom{padding:12px 10px;border-top:0.5px solid var(--border)}
+.logout-btn{display:flex;align-items:center;gap:8px;color:var(--red);font-size:13px;cursor:pointer;padding:8px 12px;border-radius:8px;border:none;background:transparent;width:100%;font-family:var(--sans)}
+.logout-btn:hover{background:rgba(239,68,68,.08)}
+
+.main-area{flex:1;overflow:auto;display:flex;flex-direction:column}
+.main-header{padding:18px 28px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);flex-shrink:0}
+.page-title{font-size:20px;font-weight:700}
+.status-live{display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--mono);color:var(--green)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.section-body{display:none;padding:24px 28px;flex:1}
+.section-body.active{display:block}
+
+/* ── TARJETAS MÉTRICAS ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.metric{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:16px}
+.metric-label{font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.metric-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
+.metric-val.cyan{color:var(--cyan)}
+.metric-val.green{color:var(--green)}
+.metric-val.amber{color:var(--amber)}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ── PANEL ── */
+.panel{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-head{padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-head-title{font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:7px}
+.panel-body{padding:16px}
+.two-col{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+/* ── CÁMARA ── */
+.cam-wrapper{position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:4/3}
+#cam-video,#ocr-video,#face-login-video{width:100%;height:100%;object-fit:cover;display:block}
+#cam-canvas,#ocr-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.cam-ui-overlay{position:absolute;inset:0;pointer-events:none}
+.cam-tl{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:6px}
+.cam-tr{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5)}
+.cam-rec{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono);color:#ef4444;background:rgba(0,0,0,.5);padding:3px 8px;border-radius:4px}
+.rec-dot{width:6px;height:6px;border-radius:50%;background:#ef4444;animation:blink 1s ease-in-out infinite}
+.scan-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(34,211,238,.5),transparent);animation:scanMove 3s linear infinite}
+@keyframes scanMove{from{top:0%}to{top:100%}}
+.cam-controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-cam{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;font-family:var(--mono);cursor:pointer;transition:background .15s}
+.btn-cam:hover{background:var(--border)}
+.btn-cam.active-cam{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,.08)}
+.btn-cam.danger{border-color:var(--red);color:var(--red)}
+.btn-cam.danger:hover{background:rgba(239,68,68,.08)}
+.btn-cam:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── RECONOCIMIENTO INFO ── */
+.recog-info{display:flex;flex-direction:column;gap:10px}
+.recog-result{background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px}
+.recog-name{font-size:18px;font-weight:700;color:var(--cyan);margin-bottom:4px}
+.recog-meta{display:flex;gap:14px;margin:6px 0 4px;font-size:11px;color:var(--muted)}
+.recog-meta b{color:var(--text);font-weight:600}
+.recog-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:10px;font-family:var(--mono);font-weight:700}
+.badge-ok{background:rgba(16,185,129,.15);color:var(--green);border:0.5px solid rgba(16,185,129,.3)}
+.badge-unknown{background:rgba(239,68,68,.15);color:var(--red);border:0.5px solid rgba(239,68,68,.3)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue);border:0.5px solid rgba(59,130,246,.3)}
+.conf-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.conf-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.conf-fill{height:100%;border-radius:3px;background:var(--green);transition:width .4s}
+.conf-label{font-size:11px;font-family:var(--mono);color:var(--muted);width:32px;text-align:right}
+
+/* ── ACTIVITY LOG ── */
+.log-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.log-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;background:var(--bg2);font-size:12px}
+.log-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);font-weight:700;flex-shrink:0}
+.log-info{flex:1;min-width:0}
+.log-name{font-weight:500;color:var(--text)}
+.log-time{font-family:var(--mono);color:var(--muted);font-size:10px}
+
+/* ── GESTIÓN DE PERSONAS ── */
+.dataset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.person-card{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.person-card:hover{border-color:var(--border2)}
+.person-top{aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;background:var(--bg3)}
+.person-initials{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-family:var(--mono);font-weight:700}
+.photo-count{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,.7);font-size:10px;font-family:var(--mono);color:rgba(255,255,255,.7);padding:2px 6px;border-radius:4px}
+.person-bottom{padding:10px 12px}
+.person-name{font-size:13px;font-weight:600;margin-bottom:1px}
+.person-id{font-size:10px;font-family:var(--mono);color:var(--muted);margin-bottom:6px}
+.person-footer{display:flex;justify-content:space-between;align-items:center}
+.person-actions{display:flex;gap:6px;margin-top:8px}
+.icon-btn{width:26px;height:26px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:color .15s,border-color .15s}
+.icon-btn:hover{color:var(--cyan);border-color:var(--cyan2)}
+.icon-btn.danger:hover{color:var(--red);border-color:var(--red)}
+.add-card{background:var(--bg3);border:0.5px dashed var(--border2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px 16px;cursor:pointer;transition:border-color .2s,background .2s;min-height:160px}
+.add-card:hover{border-color:var(--cyan2);background:rgba(34,211,238,.04)}
+.add-card i{font-size:22px;color:var(--muted)}
+.add-card span{font-size:11px;font-family:var(--mono);color:var(--muted)}
+.add-card:hover i,.add-card:hover span{color:var(--cyan)}
+
+/* CAPTURAR / EDITAR PERSONA */
+.capture-panel{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px;margin-top:16px}
+.capture-field{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.capture-field input{flex:1;min-width:160px;background:var(--bg);border:0.5px solid var(--border2);border-radius:7px;padding:9px 12px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none}
+.capture-field input:focus{border-color:var(--cyan2)}
+.capture-counter{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:6px 0}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;background:var(--cyan2);border-radius:2px;transition:width .3s}
+
+/* ── REGISTRO DE ASISTENCIA ── */
+.att-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--border);flex-wrap:wrap;gap:10px}
+.att-search{display:flex;align-items:center;gap:7px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:7px;padding:7px 11px;font-size:12px;font-family:var(--mono);color:var(--muted);flex:1;max-width:260px}
+.att-search input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:12px;width:100%}
+.att-search input::placeholder{color:var(--muted)}
+.att-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-small{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:7px;font-size:11px;font-family:var(--mono);cursor:pointer;border:0.5px solid var(--border2);background:var(--surface);color:var(--text);transition:background .15s}
+.btn-small:hover{background:var(--surface2)}
+.btn-small.primary{background:rgba(34,211,238,.12);color:var(--cyan);border-color:rgba(34,211,238,.25)}
+table.att{width:100%;border-collapse:collapse;font-size:12px}
+table.att thead tr{background:var(--bg2)}
+table.att th{padding:9px 14px;text-align:left;font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:500;letter-spacing:.07em;text-transform:uppercase;border-bottom:0.5px solid var(--border)}
+table.att td{padding:10px 14px;border-bottom:0.5px solid var(--border);color:var(--text)}
+table.att tr:last-child td{border-bottom:none}
+table.att tr:hover td{background:rgba(255,255,255,.02)}
+.td-mono{font-family:var(--mono);color:var(--muted)}
+.att-name-cell{display:flex;align-items:center;gap:8px}
+.att-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);font-weight:700;flex-shrink:0}
+
+/* ── OCR ── */
+.ocr-result{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:14px;margin-top:12px;min-height:80px}
+.ocr-text{font-family:var(--mono);font-size:13px;color:var(--cyan);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.ocr-placeholder{font-family:var(--mono);font-size:12px;color:var(--muted);font-style:italic}
+
+/* ── MODELO IA (ex "entrenar") ── */
+.train-status{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px}
+.train-log{max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.train-line{display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(--mono)}
+.train-line .ts{color:var(--muted);flex-shrink:0}
+.train-line .msg{color:var(--cyan)}
+.train-line .ok{color:var(--green)}
+.train-line .err{color:var(--red)}
+
+/* ── CHIPS / BADGES ── */
+.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:4px;font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:.04em}
+.chip-green{background:rgba(16,185,129,.15);color:var(--green)}
+.chip-red{background:rgba(239,68,68,.15);color:var(--red)}
+.chip-cyan{background:rgba(34,211,238,.12);color:var(--cyan)}
+.chip-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:10px 18px;font-size:12px;font-family:var(--mono);color:var(--text);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+
+/* ═══════════════════════════════════════════════════════════
+   BLOQUES NUEVOS — evolución institucional de Y.U.K.I
+   (login por método, estado del sistema, acciones rápidas,
+   accesibilidad y configuración)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── LOGIN: SELECTOR DE MÉTODO ── */
+.login-tabs{display:flex;gap:6px;margin-bottom:24px;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:4px}
+.login-tab{flex:1;text-align:center;padding:9px 6px;border-radius:7px;font-size:11px;font-family:var(--mono);color:var(--muted);cursor:pointer;border:none;background:transparent;transition:background .15s,color .15s}
+.login-tab i{display:block;font-size:14px;margin-bottom:4px}
+.login-tab.active{background:rgba(34,211,238,.12);color:var(--cyan)}
+.login-method{display:none}
+.login-method.active{display:block}
+.face-login-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+.access-login-box{background:var(--bg2);border:0.5px solid var(--border2);border-radius:10px;padding:18px;text-align:center}
+.access-login-box i{font-size:26px;color:var(--cyan);margin-bottom:10px}
+.access-login-box p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+
+/* ── ESTADO DEL SISTEMA (panel de inicio) ── */
+.status-grid{display:flex;flex-direction:column;gap:8px;font-size:12px;font-family:var(--mono)}
+.status-row{display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg2);border-radius:6px}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:7px}
+.status-dot.ok{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.6)}
+.status-dot.warn{background:var(--amber)}
+.status-dot.off{background:var(--muted)}
+
+/* ── ACCIONES RÁPIDAS ── */
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.quick-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;color:var(--text);font-family:var(--sans)}
+.quick-btn:hover{border-color:var(--cyan2);background:rgba(34,211,238,.05)}
+.quick-btn i{font-size:18px;color:var(--cyan)}
+.quick-btn span{font-size:11px;color:var(--muted);text-align:center}
+
+/* ── ACCESIBILIDAD ── */
+.access-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.access-card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.access-card i{font-size:20px;color:var(--cyan)}
+.access-card h4{font-size:14px;font-weight:700}
+.access-card p{font-size:12px;color:var(--muted);line-height:1.5;flex:1}
+.access-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.switch{position:relative;width:42px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-slider{position:absolute;inset:0;background:var(--border2);border-radius:22px;cursor:pointer;transition:background .2s}
+.switch-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.switch input:checked + .switch-slider{background:var(--cyan2)}
+.switch input:checked + .switch-slider::before{transform:translateX(20px)}
+
+/* Modo alto contraste (aplicado a <body>) */
+body.high-contrast{--bg:#000;--bg2:#000;--bg3:#000;--surface:#000;--surface2:#111;--border:#fff;--border2:#fff;--text:#fff;--muted:#fff;--cyan:#00ffff;--cyan2:#00cccc}
+body.high-contrast .land-mod,
+body.high-contrast .metric,
+body.high-contrast .panel,
+body.high-contrast .status-row{border-width:1.5px}
+
+/* Modo accesible: texto más grande y foco más visible */
+body.access-mode{font-size:112%}
+body.access-mode *:focus{outline:3px solid var(--cyan) !important;outline-offset:2px}
+
+/* ── CONFIGURACIÓN ── */
+.config-grid{display:flex;flex-direction:column;gap:12px}
+.config-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--bg2);border-radius:8px;gap:16px;flex-wrap:wrap}
+.config-row-text strong{display:block;font-size:13px;margin-bottom:2px}
+.config-row-text span{font-size:12px;color:var(--muted)}
+.config-select{background:var(--bg);border:0.5px solid var(--border2);color:var(--text);font-family:var(--sans);font-size:12px;padding:7px 10px;border-radius:7px}
+
+/* ── IMPRESIÓN (usado por "Descargar PDF" en Asistencia) ── */
+@media print{
+  body *{visibility:hidden}
+  #print-area,#print-area *{visibility:visible}
+  #print-area{position:absolute;top:0;left:0;width:100%}
+}
+
+/* ── BADGE "SIMULACIÓN / DEMO" ──
+   Se usa en cada módulo cuyo resultado todavía no viene de un modelo
+   real (detector, reconocimiento, modelo IA, OCR, login por rostro/voz)
+   para que quede claro que es un marcador de posición, no un resultado
+   real. Ver justificación en la respuesta de Claude sobre problemáticas
+   de esta versión. */
+.demo-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:5px;font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:.05em;background:rgba(245,158,11,.12);color:var(--amber);border:0.5px solid rgba(245,158,11,.3);margin-bottom:10px}
+
+/* ── CONSENTIMIENTO (datos biométricos) ── */
+.consent-row{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);margin:10px 0;line-height:1.5}
+.consent-row input{margin-top:2px;accent-color:var(--cyan)}
+
+/* ── BOTÓN FLOTANTE TALKBACK ──
+   Visible en cualquier pantalla (landing, login, app). Al presionarlo,
+   describe en voz alta qué hay en la pantalla actual — igual que el
+   TalkBack de Android, pero a un nivel simple: qué sección es y qué
+   acciones están disponibles. */
+.talkback-fab{
+  position:fixed;bottom:24px;right:24px;z-index:500;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan2),var(--blue));
+  border:none;color:#fff;font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(34,211,238,.35);
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+}
+.talkback-fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 6px 22px rgba(34,211,238,.5)}
+.talkback-fab:active{transform:translateY(0) scale(.97)}
+.talkback-fab .pulse-ring{
+  position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--cyan);
+  opacity:0;pointer-events:none;
+}
+.talkback-fab.speaking .pulse-ring{animation:talkbackPulse 1.2s ease-out infinite}
+@keyframes talkbackPulse{
+  0%{opacity:.6;transform:scale(.85)}
+  100%{opacity:0;transform:scale(1.25)}
+}
+
+/* Foco de teclado visible en toda la app (mejora de accesibilidad real) */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:2px;
+}
+.section-body:focus,.screen:focus{outline:none}

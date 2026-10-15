@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y.U.K.I — Sistema Inteligente para la Gestión y Accesibilidad Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<!-- Motores ML en el navegador (sin Python ni instalaciones) -->
+<script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js"></script>
+</head>
+<body>
+
+<!-- ════════════════ LANDING ════════════════ -->
+<div id="s-landing" class="screen active">
+  <div class="land-grid"></div>
+  <div class="land-glow"></div>
+  <div class="land-content">
+    <div class="yuki-logo-big">Y.U.K.I</div>
+    <div class="yuki-sub">Sistema Inteligente para la Gestión y Accesibilidad Escolar</div>
+    <p class="land-desc">Una plataforma para instituciones educativas, docentes, coordinadores, personal administrativo y personas con discapacidad visual: reconocimiento facial, asistencia, gestión de personas, OCR y accesibilidad, en un solo lugar.</p>
+    <div class="land-modules">
+      <div class="land-mod"><i class="fas fa-video"></i><span>Cámara en vivo</span></div>
+      <div class="land-mod"><i class="fas fa-user-check"></i><span>Reconocimiento facial</span></div>
+      <div class="land-mod"><i class="fas fa-clipboard-list"></i><span>Registro de asistencia</span></div>
+      <div class="land-mod"><i class="fas fa-users"></i><span>Gestión de personas</span></div>
+      <div class="land-mod"><i class="fas fa-file-alt"></i><span>OCR inteligente</span></div>
+      <div class="land-mod"><i class="fas fa-universal-access"></i><span>Accesibilidad</span></div>
+    </div>
+    <button class="btn-primary" onclick="showScreen('s-login')">
+      <i class="fas fa-arrow-right"></i> Ingresar al sistema
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="s-login" class="screen" style="display:none;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px">
+  <div class="login-card">
+    <div class="login-title">Iniciar sesión</div>
+    <div class="login-sub">Y.U.K.I // acceso institucional</div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" data-method="password" onclick="switchLoginMethod('password')">
+        <i class="fas fa-key"></i>Usuario
+      </button>
+      <button class="login-tab" data-method="face" onclick="switchLoginMethod('face')">
+        <i class="fas fa-user-check"></i>Rostro
+      </button>
+    </div>
+
+    <!-- MÉTODO: usuario y contraseña -->
+    <div class="login-method active" id="login-method-password">
+      <div class="field"><label>Correo</label><input type="email" id="l-email" placeholder="nombre@institucion.edu"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="login-footer">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" style="accent-color:var(--cyan)"> Recordarme</label>
+        <a onclick="toast('Demo: usa cualquier correo/contraseña')">¿Olvidaste tu contraseña?</a>
+      </div>
+      <div class="err-msg" id="l-err">Ingresa tu correo y contraseña.</div>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+      <div class="link-text">¿No tienes cuenta? <span onclick="showScreen('s-register')">Regístrate</span></div>
+    </div>
+
+    <!-- MÉTODO: reconocimiento facial -->
+    <div class="login-method" id="login-method-face">
+      <span class="demo-badge"><i class="fas fa-check-circle"></i> Reconocimiento facial activo — motor ONYX</span>
+      <div class="cam-wrapper">
+        <video id="face-login-video" autoplay muted playsinline></video>
+        <div class="cam-ui-overlay">
+          <div class="cam-tl"><div class="cam-rec"><span class="rec-dot"></span>BUSCANDO ROSTRO</div></div>
+          <div class="scan-line"></div>
+        </div>
+      </div>
+      <label class="consent-row">
+        <input type="checkbox" id="face-login-consent" onchange="updateFaceLoginButtons()">
+        <span>Autorizo el uso de mi rostro para iniciar sesión. El motor ONYX comparará mi imagen con las plantillas registradas en este dispositivo.</span>
+      </label>
+      <button class="btn-cam" id="btn-face-login-start" style="width:100%;justify-content:center;margin-bottom:8px" onclick="startFaceLogin()" disabled><i class="fas fa-camera"></i> Iniciar con mi rostro</button>
+      <button class="btn-cam" id="btn-face-register" style="width:100%;justify-content:center" onclick="startFaceRegister()" disabled><i class="fas fa-user-plus"></i> Crear nuevo usuario con rostro</button>
+      <p class="face-login-hint">Registra tu rostro una vez. Luego podrás entrar solo mostrando tu cara (sin contraseña).</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ REGISTRO ════════════════ -->
+<div id="s-register" class="screen" style="display:none;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px">
+  <div class="login-card">
+    <div class="login-title">Crear cuenta</div>
+    <div class="login-sub">Y.U.K.I // registro institucional</div>
+
+    <div class="field"><label>Nombre completo</label><input type="text" id="r-name" placeholder="Ej: Ana Pérez"></div>
+    <div class="field"><label>Correo</label><input type="email" id="r-email" placeholder="nombre@institucion.edu"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="r-pass" placeholder="Mínimo 4 caracteres"></div>
+    <div class="field"><label>Confirmar contraseña</label><input type="password" id="r-pass2" placeholder="Repite la contraseña" onkeydown="if(event.key==='Enter')doRegister()"></div>
+    <div class="err-msg" id="r-err">Completa todos los campos.</div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="doRegister()"><i class="fas fa-user-plus"></i> Registrarme</button>
+    <div class="link-text">¿Ya tienes cuenta? <span onclick="showScreen('s-login')">Iniciar sesión</span></div>
+  </div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="s-app" class="screen" style="display:none;min-height:100vh">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="mark" style="color:#fff"><i class="fas fa-eye"></i></div>
+      <span class="wordmark">Y.U.K.I</span>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" data-section="inicio" onclick="showSection('inicio', this)"><i class="fas fa-home"></i> Inicio</button>
+
+      <div class="nav-section-label">Módulos del sistema</div>
+      <button class="nav-item" data-section="camara" onclick="showSection('camara', this)"><i class="fas fa-video"></i> Cámara en Vivo</button>
+      <button class="nav-item" data-section="reconocer" onclick="showSection('reconocer', this)"><i class="fas fa-user-check"></i> Reconocimiento Facial</button>
+      <button class="nav-item" data-section="dataset" onclick="showSection('dataset', this)"><i class="fas fa-users"></i> Gestión de Personas</button>
+      <button class="nav-item" data-section="entrenar" onclick="showSection('entrenar', this)"><i class="fas fa-brain"></i> Modelo ONYX</button>
+      <button class="nav-item" data-section="ocr" onclick="showSection('ocr', this)"><i class="fas fa-file-alt"></i> OCR Inteligente</button>
+
+      <div class="nav-section-label">Registros</div>
+      <button class="nav-item" data-section="asistencia" onclick="showSection('asistencia', this)"><i class="fas fa-clipboard-list"></i> Registro de Asistencia</button>
+
+      <div class="nav-section-label">Sistema</div>
+      <button class="nav-item" data-section="accesibilidad" onclick="showSection('accesibilidad', this)"><i class="fas fa-universal-access"></i> Accesibilidad</button>
+      <button class="nav-item" data-section="configuracion" onclick="showSection('configuracion', this)"><i class="fas fa-cog"></i> Configuración</button>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="main-header">
+      <span class="page-title" id="page-title">Inicio</span>
+      <div class="status-live"><span class="live-dot"></span><span id="sys-clock" style="font-family:var(--mono);font-size:11px">00:00:00</span></div>
+    </div>
+
+    <!-- INICIO -->
+    <div class="section-body active" id="sec-inicio">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Registrados</div><div class="metric-val cyan">12</div><div class="metric-sub">personas activas</div></div>
+        <div class="metric"><div class="metric-label">Hoy</div><div class="metric-val green" id="m-today">0</div><div class="metric-sub">reconocimientos</div></div>
+        <div class="metric"><div class="metric-label">Umbral</div><div class="metric-val amber">&lt;70</div><div class="metric-sub">confianza mínima</div></div>
+        <div class="metric"><div class="metric-label">Modelo</div><div class="metric-val" style="font-size:14px;font-family:var(--mono);color:var(--cyan);padding-top:6px">ONYX</div><div class="metric-sub">reconocimiento facial</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-history"></i> Últimos registros</span></div>
+          <div class="panel-body"><div class="log-list" id="log-list"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-server"></i> Estado del Sistema</span></div>
+          <div class="panel-body">
+            <div class="status-grid" id="system-status-list"></div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:10px">* Estado de los módulos del sistema en este dispositivo.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-head"><span class="panel-head-title"><i class="fas fa-bolt"></i> Acciones rápidas</span></div>
+        <div class="panel-body">
+          <div class="quick-actions">
+            <button class="quick-btn" onclick="goToSection('camara')"><i class="fas fa-video"></i><span>Abrir cámara en vivo</span></button>
+            <button class="quick-btn" onclick="goToSection('reconocer')"><i class="fas fa-user-check"></i><span>Iniciar reconocimiento</span></button>
+            <button class="quick-btn" onclick="goToSection('dataset')"><i class="fas fa-user-plus"></i><span>Registrar persona</span></button>
+            <button class="quick-btn" onclick="goToSection('asistencia')"><i class="fas fa-clipboard-list"></i><span>Ver asistencia</span></button>
+            <button class="quick-btn" onclick="goToSection('ocr')"><i class="fas fa-file-alt"></i><span>Leer documento (OCR)</span></button>
+            <button class="quick-btn" onclick="goToSection('accesibilidad')"><i class="fas fa-universal-access"></i><span>Accesibilidad</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÁMARA EN VIVO -->
+    <div class="section-body" id="sec-camara">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:8px">Video en vivo con detección de rostros en tiempo real.</p>
+      <span class="demo-badge"><i class="fas fa-check-circle"></i> Detección facial activa — motor ONYX</span>
+      <div class="two-col">
+        <div>
+          <div class="cam-wrapper" id="cam-detect-wrap">
+            <video id="cam-video" autoplay muted playsinline></video>
+            <canvas id="cam-canvas"></canvas>
+            <div class="cam-ui-overlay">
+              <div class="cam-tl"><div class="cam-rec"><span class="rec-dot"></span>LIVE</div></div>
+              <div class="cam-tr" id="cam-clock2">--:--:--</div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+          <div class="cam-controls">
+            <button class="btn-cam" id="btn-open-cam" onclick="startCamera('cam-video','btn-open-cam','btn-stop-cam')"><i class="fas fa-play"></i> Iniciar cámara</button>
+            <button class="btn-cam danger" id="btn-stop-cam" onclick="stopCamera('cam-video','btn-open-cam','btn-stop-cam')" disabled><i class="fas fa-stop"></i> Detener</button>
+            <button class="btn-cam" id="btn-detect-toggle" onclick="toggleDetect()"><i class="fas fa-crosshairs"></i> Detección: OFF</button>
+            <button class="btn-cam" onclick="captureFrame('cam-video')"><i class="fas fa-camera"></i> Capturar</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-info-circle"></i> Estado</span></div>
+          <div class="panel-body" style="font-size:12px;font-family:var(--mono);display:flex;flex-direction:column;gap:8px">
+            <div id="cam-status-txt" style="color:var(--muted)">Cámara: inactiva</div>
+            <div id="face-count-txt" style="color:var(--cyan)">Rostros: 0</div>
+            <hr style="border-color:var(--border);border-width:0.5px;margin:4px 0">
+            <div style="color:var(--muted)">Detector facial: <span style="color:var(--cyan)">listo</span></div>
+            <div style="color:var(--muted)">Reconocimiento: <span style="color:var(--cyan)">disponible en su sección</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECONOCIMIENTO FACIAL -->
+    <div class="section-body" id="sec-reconocer">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:8px">Identifica a la persona frente a la cámara y registra su asistencia automáticamente.</p>
+      <span class="demo-badge"><i class="fas fa-check-circle"></i> Reconocimiento activo — modelo ONYX</span>
+      <div class="two-col">
+        <div>
+          <div class="cam-wrapper">
+            <video id="rec-video" autoplay muted playsinline></video>
+            <canvas id="rec-canvas"></canvas>
+            <div class="cam-ui-overlay">
+              <div class="cam-tl"><div class="cam-rec"><span class="rec-dot"></span>RECONOCIENDO</div></div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+          <div class="cam-controls">
+            <button class="btn-cam" id="btn-rec-start" onclick="startRecognition()"><i class="fas fa-play"></i> Iniciar reconocimiento</button>
+            <button class="btn-cam danger" id="btn-rec-stop" onclick="stopRecognition()" disabled><i class="fas fa-stop"></i> Detener</button>
+          </div>
+        </div>
+        <div class="recog-info">
+          <div class="recog-result">
+            <div class="recog-name" id="rec-name">—</div>
+            <div class="recog-meta" id="rec-meta"></div>
+            <div id="rec-badge"></div>
+            <div class="conf-row">
+              <span style="font-size:10px;color:var(--muted)">Confianza</span>
+              <div class="conf-track"><div class="conf-fill" id="conf-fill" style="width:0%"></div></div>
+              <span class="conf-label" id="conf-val">—</span>
+            </div>
+          </div>
+          <div class="panel" style="flex:1">
+            <div class="panel-head"><span class="panel-head-title"><i class="fas fa-list"></i> Reconocimientos recientes</span></div>
+            <div class="panel-body"><div class="log-list" id="rec-log"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GESTIÓN DE PERSONAS -->
+    <div class="section-body" id="sec-dataset">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:16px">Registra, actualiza y elimina las personas reconocidas por el sistema.</p>
+      <div class="capture-panel" style="margin-top:0;margin-bottom:16px">
+        <div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em">Registrar / actualizar persona</div>
+        <div class="capture-field">
+          <input type="text" id="ds-name" placeholder="Nombre de la persona">
+          <button class="btn-cam" onclick="startCapture()"><i class="fas fa-camera"></i> Capturar fotos</button>
+          <button class="btn-cam danger" id="btn-cap-stop" onclick="stopCapture()" disabled><i class="fas fa-stop"></i></button>
+          <button class="btn-cam active-cam" id="btn-save-person" style="display:none" onclick="savePersonEdit()"><i class="fas fa-save"></i> Guardar cambios</button>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="cap-progress" style="width:0%"></div></div>
+        <div class="capture-counter" id="cap-counter">0 / 100 fotos capturadas</div>
+        <label class="consent-row">
+          <input type="checkbox" id="ds-consent">
+          <span>Autorizo el tratamiento de las fotografías de esta persona (datos biométricos) conforme a la política de datos de la institución. Para menores de edad, requiere autorización del acudiente.</span>
+        </label>
+        <div class="cam-wrapper" style="max-height:220px">
+          <video id="cap-video" autoplay muted playsinline style="height:220px"></video>
+          <canvas id="cap-canvas" style="height:220px"></canvas>
+        </div>
+      </div>
+      <div class="dataset-grid" id="ds-grid"></div>
+    </div>
+
+    <!-- MODELO IA -->
+    <div class="section-body" id="sec-entrenar">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:8px">Entrena o actualiza el modelo <b style="color:var(--cyan)">ONYX</b> con las personas registradas.</p>
+      <span class="demo-badge"><i class="fas fa-check-circle"></i> Modelo ONYX — entrenamiento con plantillas faciales reales</span>
+      <div class="metrics" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
+        <div class="metric"><div class="metric-label">Imágenes usadas</div><div class="metric-val cyan" id="model-images">0</div><div class="metric-sub">en el entrenamiento</div></div>
+        <div class="metric"><div class="metric-label">Última actualización</div><div class="metric-val" style="font-size:15px;font-family:var(--mono);color:var(--muted);padding-top:6px" id="model-last-update">nunca</div></div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-play-circle"></i> Ejecutar</span></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:12px;color:var(--muted);line-height:1.6">
+              <b style="color:var(--cyan)">Entrenar ONYX</b>: reconstruye el índice facial con todas las personas registradas.<br>
+              <b style="color:var(--cyan)">Actualizar ONYX</b>: incorpora solo las plantillas nuevas, sin borrar las anteriores.
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-primary" onclick="trainOnyx(true)"><i class="fas fa-brain"></i> Entrenar ONYX</button>
+              <button class="btn-cam" onclick="trainOnyx(false)"><i class="fas fa-sync"></i> Actualizar ONYX</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-terminal"></i> Registro del proceso</span></div>
+          <div class="panel-body">
+            <div class="train-status">
+              <div class="train-log" id="train-log">
+                <div class="train-line"><span class="ts">--:--:--</span><span class="msg">Esperando inicio...</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OCR INTELIGENTE -->
+    <div class="section-body" id="sec-ocr">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:8px">Lee documentos con la cámara, extrae el texto y puede convertirlo en voz o usarlo para registrar asistencia.</p>
+      <span class="demo-badge"><i class="fas fa-check-circle"></i> OCR activo — Tesseract.js (español + inglés)</span>
+      <div class="two-col">
+        <div>
+          <div class="cam-wrapper">
+            <video id="ocr-video" autoplay muted playsinline></video>
+            <canvas id="ocr-canvas"></canvas>
+            <div class="cam-ui-overlay">
+              <div class="cam-tl"><div class="cam-rec"><span class="rec-dot"></span>OCR LIVE</div></div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+          <div class="cam-controls">
+            <button class="btn-cam" id="btn-ocr-start" onclick="startOCR()"><i class="fas fa-play"></i> Iniciar OCR</button>
+            <button class="btn-cam danger" id="btn-ocr-stop" onclick="stopOCR()" disabled><i class="fas fa-stop"></i> Detener</button>
+            <button class="btn-cam" id="btn-speak" onclick="speakText()" disabled><i class="fas fa-volume-up"></i> Leer en voz alta</button>
+            <button class="btn-cam" id="btn-ocr-attendance" onclick="generateAttendanceFromOCR()" disabled><i class="fas fa-clipboard-check"></i> Generar asistencia</button>
+          </div>
+        </div>
+        <div class="panel" style="display:flex;flex-direction:column">
+          <div class="panel-head"><span class="panel-head-title"><i class="fas fa-align-left"></i> Texto detectado</span></div>
+          <div class="panel-body" style="flex:1">
+            <div class="ocr-result">
+              <div class="ocr-text" id="ocr-text"></div>
+              <div class="ocr-placeholder" id="ocr-placeholder">Apunta la cámara a un texto y presiona Iniciar OCR...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRO DE ASISTENCIA -->
+    <div class="section-body" id="sec-asistencia">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:16px">Historial de asistencia registrado por reconocimiento facial u OCR.</p>
+      <div class="panel">
+        <div class="att-toolbar">
+          <div class="att-search"><i class="fas fa-search" style="font-size:12px;color:var(--muted)"></i><input type="text" id="att-search-input" placeholder="Buscar nombre…" oninput="filterTable()"></div>
+          <div class="att-actions">
+            <button class="btn-small" onclick="exportCSV()"><i class="fas fa-file-csv"></i> Exportar CSV</button>
+            <button class="btn-small" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+            <button class="btn-small" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Descargar PDF</button>
+            <button class="btn-small primary" onclick="addFakeEntry()"><i class="fas fa-plus"></i> Agregar registro de prueba</button>
+          </div>
+        </div>
+        <table class="att" id="att-table">
+          <thead><tr>
+            <th>#</th><th>Nombre</th><th>Curso</th><th>Fecha</th><th>Hora</th><th>Estado</th>
+          </tr></thead>
+          <tbody id="att-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACCESIBILIDAD (reemplaza al chatbot) -->
+    <div class="section-body" id="sec-accesibilidad">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:16px">Herramientas para personas con discapacidad visual y para navegar el sistema por voz.</p>
+      <div class="access-grid">
+        <div class="access-card">
+          <i class="fas fa-microphone"></i>
+          <h4>Asistente por voz</h4>
+          <p>Escucha comandos por voz y responde en voz alta. La interfaz ya está lista; la interpretación de comandos se conectará más adelante.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-cam" onclick="startVoiceListening()"><i class="fas fa-microphone"></i> Escuchar</button>
+            <button class="btn-cam" onclick="speakAssistant()"><i class="fas fa-volume-up"></i> Hablar</button>
+          </div>
+        </div>
+        <div class="access-card">
+          <i class="fas fa-align-left"></i>
+          <h4>Leer pantalla</h4>
+          <p>Lee en voz alta el contenido de la sección que estás viendo actualmente, usando la síntesis de voz del navegador.</p>
+          <button class="btn-cam" onclick="readScreen()"><i class="fas fa-play"></i> Leer pantalla</button>
+        </div>
+        <div class="access-card">
+          <i class="fas fa-adjust"></i>
+          <h4>Modo alto contraste</h4>
+          <p>Aumenta el contraste de colores en toda la plataforma para facilitar la lectura.</p>
+          <div class="access-toggle">
+          <label style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;cursor:pointer">
+            <span>Activar alto contraste</span>
+            <span class="switch"><input type="checkbox" onchange="toggleHighContrast(this)"><span class="switch-slider"></span></span>
+          </label>
+        </div>
+        </div>
+        <div class="access-card">
+          <i class="fas fa-universal-access"></i>
+          <h4>Modo accesible</h4>
+          <p>Aumenta el tamaño del texto y resalta el foco de teclado en toda la aplicación.</p>
+          <div class="access-toggle">
+            <label style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;cursor:pointer">
+              <span>Activar modo accesible</span>
+              <span class="switch"><input type="checkbox" onchange="toggleAccessMode(this)"><span class="switch-slider"></span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div class="section-body" id="sec-configuracion">
+      <p style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:16px">Preferencias generales del sistema.</p>
+      <div class="config-grid">
+        <div class="config-row">
+          <div class="config-row-text"><strong>Umbral de confianza</strong><span>Nivel mínimo para considerar un rostro como reconocido</span></div>
+          <select class="config-select" id="cfg-confidence" onchange="setConfidenceThreshold(this.value)">
+            <option value="50">Estricto (&lt;50)</option>
+            <option value="70" selected>Normal (&lt;70)</option>
+            <option value="90">Permisivo (&lt;90)</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <div class="config-row-text"><strong>Idioma del asistente de voz</strong><span>Usado en Accesibilidad y OCR</span></div>
+          <select class="config-select" id="voice-lang-select" onchange="setVoiceLanguage(this.value)">
+            <option value="es-ES" selected>Español</option>
+            <option value="en-US">English</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <div class="config-row-text"><strong>Notificaciones</strong><span>Avisos emergentes al registrar asistencia</span></div>
+          <label class="switch"><input type="checkbox" id="cfg-notifications" checked onchange="setNotifications(this.checked)"><span class="switch-slider"></span></label>
+        </div>
+        <div class="config-row">
+          <div class="config-row-text"><strong>Cuenta</strong><span>Sesión institucional activa</span></div>
+          <button class="btn-small" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-area -->
+</div><!-- /s-app -->
+
+<!-- Área invisible usada únicamente para generar el PDF de asistencia -->
+<div id="print-area" style="display:none"></div>
+
+<!-- TALKBACK: botón flotante, disponible en cualquier pantalla -->
+<button class="talkback-fab" id="talkback-btn" onclick="talkbackExplainScreen()" aria-label="TalkBack: explicar en voz alta lo que hay en esta pantalla" title="Explicar pantalla (TalkBack)">
+  <span class="pulse-ring"></span>
+  <i class="fas fa-assistive-listening-systems"></i>
+</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el" role="status" aria-live="polite"></div>
+
+<!-- ════════════════ MÓDULOS JS (cada uno con una sola responsabilidad) ════════════════ -->
+<script src="js/config.js"></script>
+<script src="js/face-engine.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/detector.js"></script>
+<script src="js/recognition.js"></script>
+<script src="js/dataset.js"></script>
+<script src="js/model.js"></script>
+<script src="js/ocr.js"></script>
+<script src="js/attendance.js"></script>
+<script src="js/accessibility.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
